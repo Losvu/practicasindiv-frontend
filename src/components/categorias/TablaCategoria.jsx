@@ -2,7 +2,8 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Categorias from './views/Categorias';
+import Categorias from '../../views/Categorias';
+
 
 // Declaración del componente TablaCategorias que recibe props
 const TablaCategoria = ({ categorias, cargando, error }) => {
