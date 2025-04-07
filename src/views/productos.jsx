@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Container, Button } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import ModalRegistroProducto from '../components/producto/ModalRegistroProducto';
+import TablaProductos from '../components/producto/TablaProductos'; // Asumiendo que tienes este componente
+import ModalRegistroProducto from '../components/producto/ModalRegistroProducto'; // Asumiendo que tienes este componente
+import { Container, Button } from "react-bootstrap";
 
 const Productos = () => {
-  const [productos, setProductos] = useState([]);
+  const [listaProductos, setListaProductos] = useState([]);
+  const [listaCategorias, setListaCategorias] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [errorCarga, setErrorCarga] = useState(null);
-  const [listaCategorias, setListaCategorias] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [nuevoProducto, setNuevoProducto] = useState({
     nombre_producto: '',
@@ -18,19 +18,13 @@ const Productos = () => {
     imagen: ''
   });
 
-  useEffect(() => {
-    obtenerProductos();
-    obtenerCategorias();
-  }, []);
-
+  // Obtener productos
   const obtenerProductos = async () => {
     try {
       const respuesta = await fetch('http://localhost:3000/api/productos');
-      if (!respuesta.ok) {
-        throw new Error('Error al cargar los productos');
-      }
+      if (!respuesta.ok) throw new Error('Error al cargar los productos');
       const datos = await respuesta.json();
-      setProductos(datos);
+      setListaProductos(datos);
       setCargando(false);
     } catch (error) {
       setErrorCarga(error.message);
@@ -38,9 +32,10 @@ const Productos = () => {
     }
   };
 
+  // Obtener categorías para el dropdown
   const obtenerCategorias = async () => {
     try {
-      const respuesta = await fetch('http://localhost:3000/api/categorias');
+      const respuesta = await fetch('http://localhost:3000/api/categoria');
       if (!respuesta.ok) throw new Error('Error al cargar las categorías');
       const datos = await respuesta.json();
       setListaCategorias(datos);
@@ -48,6 +43,11 @@ const Productos = () => {
       setErrorCarga(error.message);
     }
   };
+
+  useEffect(() => {
+    obtenerProductos();
+    obtenerCategorias();
+  }, []);
 
   const manejarCambioInput = (e) => {
     const { name, value } = e.target;
@@ -92,63 +92,30 @@ const Productos = () => {
   };
 
   return (
-    <Container>
-      <h4>Lista de Productos</h4>
-
+    <Container className="mt-5">
+      <br />
+      <h4>Productos</h4>
       <Button variant="primary" onClick={() => setMostrarModal(true)}>
         Nuevo Producto
       </Button>
-      <br /><br />
+      <br/><br/>
+
+      <TablaProductos 
+        productos={listaProductos} 
+        cargando={cargando} 
+        error={errorCarga} 
+      />
+
+      <ModalRegistroProducto
+        mostrarModal={mostrarModal}
+        setMostrarModal={setMostrarModal}
+        nuevoProducto={nuevoProducto}
+        manejarCambioInput={manejarCambioInput}
+        agregarProducto={agregarProducto}
+        errorCarga={errorCarga}
+        categorias={listaCategorias}
+      />
       
-      <Button variant="primary" onClick={obtenerProductos}>Actualizar Lista</Button>
-      
-      {cargando ? (
-        <p>Cargando productos...</p>
-      ) : errorCarga ? (
-        <p>Error: {errorCarga}</p>
-      ) : (
-        <Table striped bordered hover responsive>
-          <ModalRegistroProducto
-            mostrarModal={mostrarModal}
-            setMostrarModal={setMostrarModal}
-            nuevoProducto={nuevoProducto}
-            manejarCambioInput={manejarCambioInput}
-            agregarProducto={agregarProducto}
-            errorCarga={errorCarga}
-            categorias={listaCategorias}
-          />
-          <thead>
-            <tr>
-              <th>ID Producto</th>
-              <th>Nombre Producto</th>
-              <th>Descripción Producto</th>
-              <th>ID Categoría</th>
-              <th>Precio Unitario</th>
-              <th>Stock</th>
-              <th>Imagen</th>
-            </tr>
-          </thead>
-          <tbody>
-            {productos.map((producto) => (
-              <tr key={producto.id_producto}>
-                <td>{producto.id_producto}</td>
-                <td>{producto.nombre_producto}</td>
-                <td>{producto.descripcion_producto}</td>
-                <td>{producto.id_categoria}</td>
-                <td>{producto.precio_unitario}</td>
-                <td>{producto.stock}</td>
-                <td>
-                  {producto.imagen ? (
-                    <img src={producto.imagen} alt={producto.nombre_producto} width="50" height="50" />
-                  ) : (
-                    'Sin imagen'
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      )}
     </Container>
   );
 };

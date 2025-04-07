@@ -1,6 +1,7 @@
+
 // Importaciones necesarias para la vista
 import React, { useState, useEffect } from 'react';
-import TablaVentas from '../components/ventas/TablaVentas'; // Importa el componente de tabla
+import TablaVenta from '../components/venta/TablaVenta'; // Importa el componente de tabla
 import { Container } from "react-bootstrap";
 
 // Declaración del componente Ventas
@@ -14,7 +15,7 @@ const Ventas = () => {
   useEffect(() => {
     const obtenerVentas = async () => {
       try {
-        const respuesta = await fetch('http://localhost:3000/api/ventas'); // Ruta ajustada al controlador
+        const respuesta = await fetch('http://localhost:3000/api/venta'); // Ruta ajustada al controlador
         if (!respuesta.ok) {
           throw new Error('Error al cargar las ventas');
         }
@@ -37,7 +38,7 @@ const Ventas = () => {
         <h4>Ventas con Detalles</h4>
 
         {/* Pasa los estados como props al componente TablaVentas */}
-        <TablaVentas
+        <TablaVenta
           ventas={listaVentas}
           cargando={cargando}
           error={errorCarga}
@@ -47,5 +48,5 @@ const Ventas = () => {
   );
 };
 
-//exportacion del componente
+// Exportación del componente
 export default Ventas;

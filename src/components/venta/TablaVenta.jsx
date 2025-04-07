@@ -3,7 +3,7 @@ import React from 'react';
 import { Table } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const TablaVentas = ({ ventas, cargando, error }) => {
+const TablaVenta = ({ ventas, cargando, error }) => {
   if (cargando) {
     return <div>Cargando ventas...</div>; // Muestra mensaje mientras carga
   }
@@ -47,5 +47,4 @@ const TablaVentas = ({ ventas, cargando, error }) => {
 };
 
 // Exportación del componente
-export default TablaVentas;
-
+export default TablaVenta;
