@@ -5,7 +5,8 @@ import TablaCategorias from '../components/categorias/TablaCategorias'; // Impor
 import { Container, Button, Row, Col } from "react-bootstrap";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas"
 import ModalRegistroCategoria from '../components/categorias/ModalRegistroCategoria';
-
+import ModalEliminacionCategoria from '../components/categorias/ModalEliminacionCategoria';
+import ModalEdicionCategoria from '../components/categorias/ModalEdicionCategoria';
 
 // Declaración del componente Categorias
 const Categorias = () => {
@@ -20,21 +21,25 @@ const Categorias = () => {
     nombre_categoria: '',
     descripcion_categoria: ''
   });
-
-
 //.. nuevas variables de estado
 const [paginaActual, establecerPaginaActual] = useState(1);
 const elementosPorPagina = 5; // Número de elementos por página
+
+const [mostrarModalEliminacion, setMostrarModalEliminacion] = useState(false);
+const [categoriaAEliminar, setCategoriaAEliminar] = useState(null);
+
+const [categoriaEditada, setCategoriaEditada] = useState(null);
+const [mostrarModalEdicion, setMostrarModalEdicion] = useState(false);
 
   const obtenerCategorias = async () => { // Método renombrado a español
     try {
       const respuesta = await fetch('http://localhost:3000/api/categorias');
       if (!respuesta.ok) {
         throw new Error('Error al cargar las categorías');
-      }
+      } 
       const datos = await respuesta.json();
       setListaCategorias(datos); 
-      setCategoriasFiltradas   // Actualiza el estado con los datos
+      setCategoriasFiltradas(datos)   // Actualiza el estado con los datos
       setCargando(false);           // Indica que la carga terminó
     } catch (error) {
       setErrorCarga(error.message); // Guarda el mensaje de error
@@ -57,6 +62,18 @@ const elementosPorPagina = 5; // Número de elementos por página
       [name]: value
     }));
   };
+
+
+
+  const manejarCambioInputEdicion = (e) => {
+    const { name, value } = e.target;
+    setCategoriaEditada(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+
 
   const manejarCambioBusqueda = (e) => {
     const texto = e.target.value.toLowerCase();
@@ -109,6 +126,76 @@ const categoriasPaginadas = categoriasFiltradas.slice(
   paginaActual * elementosPorPagina
 );
 
+//metodo de eliminar categoria
+const eliminarCategoria = async () => {
+  if (!categoriaAEliminar) return;
+
+  try {
+    const respuesta = await fetch(`http://localhost:3000/api/eliminarcategoria/${categoriaAEliminar.id_categoria}`, {
+      method: 'DELETE',
+    });
+
+    if (!respuesta.ok) {
+      throw new Error('Error al eliminar la categoría');
+    }
+
+    await obtenerCategorias(); // Refresca la lista
+    setMostrarModalEliminacion(false);
+    establecerPaginaActual(1); // Regresa a la primera página
+    setCategoriaAEliminar(null);
+    setErrorCarga(null);
+  } catch (error) {
+    setErrorCarga(error.message);
+  }
+};
+
+
+
+const abrirModalEdicion = (categoria) => {
+  setCategoriaEditada(categoria);
+  setMostrarModalEdicion(true);
+};
+
+
+
+const actualizarCategoria = async () => {
+  if (!categoriaEditada?.nombre_categoria || !categoriaEditada?.descripcion_categoria) {
+    setErrorCarga("Por favor, completa todos los campos antes de guardar.");
+    return;
+  }
+
+  try {
+    const respuesta = await fetch(`http://localhost:3000/api/actualizarcategoria/${categoriaEditada.id_categoria}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        nombre_categoria: categoriaEditada.nombre_categoria,
+        descripcion_categoria: categoriaEditada.descripcion_categoria,
+      }),
+    });
+
+    if (!respuesta.ok) {
+      throw new Error('Error al actualizar la categoría');
+    }
+
+    await obtenerCategorias();
+    setMostrarModalEdicion(false);
+    setCategoriaEditada(null);
+    setErrorCarga(null);
+  } catch (error) {
+    setErrorCarga(error.message);
+  }
+};
+
+
+
+//manejo de abrir el modal de eliminacion
+const abrirModalEliminacion = (categoria) => {
+  setCategoriaAEliminar(categoria);
+  setMostrarModalEliminacion(true);
+};
 
 
   // Renderizado de la vista
@@ -134,7 +221,7 @@ const categoriasPaginadas = categoriasFiltradas.slice(
 
 
         {/* Pasa los estados como props al componente TablaCategorias */}
-       <TablaCategorias 
+         <TablaCategorias 
           categorias={categoriasPaginadas} 
           cargando={cargando} 
           error={errorCarga}
@@ -142,9 +229,11 @@ const categoriasPaginadas = categoriasFiltradas.slice(
           elementosPorPagina={elementosPorPagina} // Elementos por página
           paginaActual={paginaActual} // Página actual
           establecerPaginaActual={establecerPaginaActual} // Método para cambiar página
+          abrirModalEliminacion={abrirModalEliminacion} // Método para abrir modal de eliminación
+          abrirModalEdicion={abrirModalEdicion} // Método para abrir modal de edición
        />
 
-<ModalRegistroCategoria
+        <ModalRegistroCategoria
           mostrarModal={mostrarModal}
           setMostrarModal={setMostrarModal}
           nuevaCategoria={nuevaCategoria}
@@ -153,6 +242,20 @@ const categoriasPaginadas = categoriasFiltradas.slice(
           errorCarga={errorCarga}
         />
 
+          <ModalEliminacionCategoria
+          mostrarModalEliminacion={mostrarModalEliminacion}
+          setMostrarModalEliminacion={setMostrarModalEliminacion}
+          eliminarCategoria={eliminarCategoria}
+        />
+
+          <ModalEdicionCategoria
+          mostrarModalEdicion={mostrarModalEdicion}
+          setMostrarModalEdicion={setMostrarModalEdicion}
+          categoriaEditada={categoriaEditada}
+          manejarCambioInputEdicion={manejarCambioInputEdicion}
+          actualizarCategoria={actualizarCategoria}
+          errorCarga={errorCarga}
+        />
 
       </Container>
     </>
