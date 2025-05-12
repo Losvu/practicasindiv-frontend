@@ -1,62 +1,46 @@
-// ModalActualizacionVenta.jsx
-import React, { useState, useEffect } from "react";
-import { Modal, Form, Button, Table, Row, Col, FormControl } from "react-bootstrap";
+// ModalActualizacionCompra.jsx
+
+import React, { useState, useEffect } from 'react';
+import { Modal, Form, Button, Table, Row, Col, FormControl } from 'react-bootstrap';
 import AsyncSelect from 'react-select/async';
 import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
+import 'react-datepicker/dist/react-datepicker.css';
 
-const ModalActualizacionVenta = ({
+const ModalActualizacionCompra = ({
   mostrarModal,
   setMostrarModal,
-  venta,
-  detallesVenta,
-  setDetallesVenta,
-  actualizarVenta,
+  compra,
+  detallesCompra,
+  setDetallesCompra,
+  actualizarCompra,
   errorCarga,
-  clientes,
   empleados,
   productos
 }) => {
-  const [ventaActualizada, setVentaActualizada] = useState({
-    id_venta: venta?.id_venta || '',
-    id_cliente: venta?.id_cliente || '',
-    id_empleado: venta?.id_empleado || '',
-    fecha_venta: venta?.fecha_venta ? new Date(venta.fecha_venta) : new Date(),
-    total_venta: venta?.total_venta || 0
+  const [compraActualizada, setCompraActualizada] = useState({
+    id_compra: compra?.id_compra || '',
+    id_empleado: compra?.id_empleado || '',
+    fecha_compra: compra?.fecha_compra ? new Date(compra.fecha_compra) : new Date(),
+    total_compra: compra?.total_compra || 0
   });
-  const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   const [nuevoDetalle, setNuevoDetalle] = useState({ id_producto: '', cantidad: '', precio_unitario: '' });
+  const [editandoDetalle, setEditandoDetalle] = useState(null);
 
-  // Calcular total de la venta
-  const totalVenta = detallesVenta.reduce((sum, detalle) => sum + (detalle.cantidad * detalle.precio_unitario), 0);
+  const totalCompra = detallesCompra.reduce((sum, detalle) => sum + (detalle.cantidad * detalle.precio_unitario), 0);
 
   useEffect(() => {
-    if (venta && clientes.length > 0 && empleados.length > 0) {
-      setClienteSeleccionado({ value: venta.id_cliente, label: venta.nombre_cliente });
-      setEmpleadoSeleccionado({ value: venta.id_empleado, label: venta.nombre_empleado });
-      setVentaActualizada({
-        id_venta: venta.id_venta || '',
-        id_cliente: venta.id_cliente || '',
-        id_empleado: venta.id_empleado || '',
-        fecha_venta: venta?.fecha_venta ? new Date(venta.fecha_venta) : new Date(),
-        total_venta: parseFloat(venta.total_venta) || 0
+    if (compra && empleados.length > 0) {
+      setEmpleadoSeleccionado({ value: compra.id_empleado, label: compra.nombre_empleado });
+      setCompraActualizada({
+        id_compra: compra.id_compra || '',
+        id_empleado: compra.id_empleado || '',
+        fecha_compra: compra?.fecha_compra ? new Date(compra.fecha_compra) : new Date(),
+        total_compra: parseFloat(compra.total_compra) || 0
       });
     }
-  }, [venta, clientes, empleados]);
-
-
-  // Cargar opciones para AsyncSelect
-  const cargarClientes = (inputValue, callback) => {
-    const filtrados = clientes.filter(cliente =>
-      `${cliente.primer_nombre} ${cliente.primer_apellido}`.toLowerCase().includes(inputValue.toLowerCase())
-    );
-    callback(filtrados.map(cliente => ({
-      value: cliente.id_cliente,
-      label: `${cliente.primer_nombre} ${cliente.primer_apellido}`
-    })));
-  };
+  }, [compra, empleados]);
 
   const cargarEmpleados = (inputValue, callback) => {
     const filtrados = empleados.filter(empleado =>
@@ -79,15 +63,9 @@ const ModalActualizacionVenta = ({
     })));
   };
 
-  // Manejar cambios en los selectores
-  const manejarCambioCliente = (seleccionado) => {
-    setClienteSeleccionado(seleccionado);
-    setVentaActualizada(prev => ({ ...prev, id_cliente: seleccionado ? seleccionado.value : '' }));
-  };
-
   const manejarCambioEmpleado = (seleccionado) => {
     setEmpleadoSeleccionado(seleccionado);
-    setVentaActualizada(prev => ({ ...prev, id_empleado: seleccionado ? seleccionado.value : '' }));
+    setCompraActualizada(prev => ({ ...prev, id_empleado: seleccionado ? seleccionado.value : '' }));
   };
 
   const manejarCambioProducto = (seleccionado) => {
@@ -99,27 +77,17 @@ const ModalActualizacionVenta = ({
     }));
   };
 
-  // Manejar cambios en el detalle
   const manejarCambioDetalle = (e) => {
     const { name, value } = e.target;
     setNuevoDetalle(prev => ({ ...prev, [name]: value }));
   };
 
-  // Agregar detalle a la lista
   const manejarAgregarDetalle = () => {
     if (!nuevoDetalle.id_producto || !nuevoDetalle.cantidad || nuevoDetalle.cantidad <= 0) {
-      alert("Por favor, selecciona un producto y una cantidad válida.");
+      alert('Por favor, selecciona un producto y una cantidad válida.');
       return;
     }
-
-    // Verificar stock
-    const producto = productos.find(p => p.id_producto === nuevoDetalle.id_producto);
-    if (producto && nuevoDetalle.cantidad > producto.stock) {
-      alert(`Stock insuficiente de ${producto.nombre_producto}. Unidades disponibles: ${producto.stock}`);
-      return;
-    }
-
-    setDetallesVenta(prev => [...prev, {
+    setDetallesCompra(prev => [...prev, {
       id_producto: nuevoDetalle.id_producto,
       nombre_producto: productoSeleccionado.label,
       cantidad: parseInt(nuevoDetalle.cantidad),
@@ -129,39 +97,57 @@ const ModalActualizacionVenta = ({
     setProductoSeleccionado(null);
   };
 
-  // Eliminar detalle
   const eliminarDetalle = (index) => {
-    setDetallesVenta(prev => prev.filter((_, i) => i !== index));
+    setDetallesCompra(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const iniciarEdicionDetalle = (index, detalle) => {
+    setEditandoDetalle({ index, detalle });
+    setNuevoDetalle({
+      id_producto: detalle.id_producto,
+      cantidad: detalle.cantidad.toString(),
+      precio_unitario: detalle.precio_unitario.toString()
+    });
+    setProductoSeleccionado({
+      value: detalle.id_producto,
+      label: detalle.nombre_producto,
+      precio: detalle.precio_unitario
+    });
+  };
+
+  const guardarEdicionDetalle = () => {
+    if (!editandoDetalle) return;
+    if (!nuevoDetalle.id_producto || !nuevoDetalle.cantidad || nuevoDetalle.cantidad <= 0) {
+      alert('Por favor, selecciona un producto y una cantidad válida.');
+      return;
+    }
+    const nuevosDetalles = [...detallesCompra];
+    nuevosDetalles[editandoDetalle.index] = {
+      id_producto: nuevoDetalle.id_producto,
+      nombre_producto: productoSeleccionado.label,
+      cantidad: parseInt(nuevoDetalle.cantidad),
+      precio_unitario: parseFloat(nuevoDetalle.precio_unitario)
+    };
+    setDetallesCompra(nuevosDetalles);
+    setEditandoDetalle(null);
+    setNuevoDetalle({ id_producto: '', cantidad: '', precio_unitario: '' });
+    setProductoSeleccionado(null);
   };
 
   return (
-    <Modal
-      show={mostrarModal}
-      onHide={() => setMostrarModal(false)}
-      fullscreen={true}
-      aria-labelledby="contained-modal-title-vcenter"
-    >
+    <Modal show={mostrarModal} onHide={() => {
+      setMostrarModal(false);
+      setNuevoDetalle({ id_producto: '', cantidad: '', precio_unitario: '' });
+      setProductoSeleccionado(null);
+      setEditandoDetalle(null);
+    }} fullscreen={true}>
       <Modal.Header closeButton>
-        <Modal.Title>Actualizar Venta</Modal.Title>
+        <Modal.Title>Actualizar Compra</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
           <Row>
-            <Col xs={12} sm={12} md={4} lg={4}>
-              <Form.Group className="mb-3" controlId="formCliente">
-                <Form.Label>Cliente</Form.Label>
-                <AsyncSelect
-                  cacheOptions
-                  defaultOptions
-                  loadOptions={cargarClientes}
-                  onChange={manejarCambioCliente}
-                  value={clienteSeleccionado}
-                  placeholder="Buscar cliente..."
-                  isClearable
-                />
-              </Form.Group>
-            </Col>
-            <Col xs={12} sm={12} md={4} lg={4}>
+            <Col xs={12} sm={12} md={6} lg={6}>
               <Form.Group className="mb-3" controlId="formEmpleado">
                 <Form.Label>Empleado</Form.Label>
                 <AsyncSelect
@@ -175,25 +161,25 @@ const ModalActualizacionVenta = ({
                 />
               </Form.Group>
             </Col>
-            <Col xs={12} sm={12} md={4} lg={4}>
-              <Form.Group className="mb-3" controlId="formFechaVenta">
-                <Form.Label>Fecha de Venta</Form.Label>
+            <Col xs={12} sm={12} md={6} lg={6}>
+              <Form.Group className="mb-3" controlId="formFechaCompra">
+                <Form.Label>Fecha de Compra</Form.Label>
                 <br />
                 <DatePicker
-                  selected={ventaActualizada.fecha_venta}
-                  onChange={(date) => setVentaActualizada(prev => ({ ...prev, fecha_venta: date }))}
+                  selected={compraActualizada.fecha_compra}
+                  onChange={(date) => setCompraActualizada(prev => ({ ...prev, fecha_compra: date }))}
                   className="form-control"
                   dateFormat="dd/MM/yyyy HH:mm"
                   showTimeSelect
                   timeFormat="HH:mm"
-                  timeIntervals={15}
+                  timeIntervals={1}
                   required
                 />
               </Form.Group>
             </Col>
           </Row>
           <hr />
-          <h5>Agregar Detalle de Venta</h5>
+          <h5>{editandoDetalle ? 'Editar Detalle de Compra' : 'Agregar Detalle de Compra'}</h5>
           <Row>
             <Col xs={12} sm={12} md={4} lg={4}>
               <Form.Group className="mb-3" controlId="formProducto">
@@ -206,6 +192,7 @@ const ModalActualizacionVenta = ({
                   value={productoSeleccionado}
                   placeholder="Buscar producto..."
                   isClearable
+                  isDisabled={editandoDetalle !== null}
                 />
               </Form.Group>
             </Col>
@@ -230,19 +217,25 @@ const ModalActualizacionVenta = ({
                   type="number"
                   name="precio_unitario"
                   value={nuevoDetalle.precio_unitario}
-                  disabled
-                  placeholder="Automático"
+                  onChange={manejarCambioDetalle}
+                  placeholder="Precio"
+                  required
                 />
               </Form.Group>
             </Col>
             <Col xs={5} sm={4} md={2} lg={2} className="d-flex align-items-center mt-3">
-              <Button style={{ width: '100%' }} variant="success" onClick={manejarAgregarDetalle}>
-                Agregar Producto
-              </Button>
+              {editandoDetalle ? (
+                <Button style={{ width: '100%' }} variant="primary" onClick={guardarEdicionDetalle}>
+                  Guardar Cambios
+                </Button>
+              ) : (
+                <Button style={{ width: '100%' }} variant="success" onClick={manejarAgregarDetalle}>
+                  Agregar Producto
+                </Button>
+              )}
             </Col>
           </Row>
-
-          {detallesVenta.length > 0 && (
+          {detallesCompra.length > 0 && (
             <>
               <h5 className="mt-4">Detalles Agregados</h5>
               <Table striped bordered hover>
@@ -256,13 +249,16 @@ const ModalActualizacionVenta = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {detallesVenta.map((detalle, index) => (
+                  {detallesCompra.map((detalle, index) => (
                     <tr key={index}>
                       <td>{detalle.nombre_producto}</td>
                       <td>{detalle.cantidad}</td>
                       <td>{detalle.precio_unitario.toFixed(2)}</td>
                       <td>{(detalle.cantidad * detalle.precio_unitario).toFixed(2)}</td>
                       <td>
+                        <Button variant="warning" size="sm" onClick={() => iniciarEdicionDetalle(index, detalle)} className="me-2">
+                          Editar
+                        </Button>
                         <Button variant="danger" size="sm" onClick={() => eliminarDetalle(index)}>
                           Eliminar
                         </Button>
@@ -273,28 +269,30 @@ const ModalActualizacionVenta = ({
                 <tfoot>
                   <tr>
                     <td colSpan="4" className="text-end"><strong>Total:</strong></td>
-                    <td><strong>{totalVenta.toFixed(2)}</strong></td>
+                    <td><strong>{totalCompra.toFixed(2)}</strong></td>
                   </tr>
                 </tfoot>
               </Table>
             </>
           )}
-
-          {errorCarga && (
-            <div className="text-danger mt-2">{errorCarga}</div>
-          )}
+          {errorCarga && <div className="text-danger mt-2">{errorCarga}</div>}
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={() => setMostrarModal(false)}>
+        <Button variant="secondary" onClick={() => {
+          setMostrarModal(false);
+          setNuevoDetalle({ id_producto: '', cantidad: '', precio_unitario: '' });
+          setProductoSeleccionado(null);
+          setEditandoDetalle(null);
+        }}>
           Cancelar
         </Button>
-        <Button variant="primary" onClick={() => actualizarVenta(ventaActualizada, detallesVenta)}>
-          Actualizar Venta
+        <Button variant="primary" onClick={() => actualizarCompra(compraActualizada, detallesCompra)}>
+          Actualizar Compra
         </Button>
       </Modal.Footer>
     </Modal>
   );
 };
 
-export default ModalActualizacionVenta;
+export default ModalActualizacionCompra;
