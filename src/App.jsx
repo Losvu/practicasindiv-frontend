@@ -6,8 +6,9 @@ import Categorias from "./views/categorias";
 import Encabezado from "./components/encabezado/Encabezado";
 import Producto from "./views/productos";
 import Ventas from "./views/ventas";
-import Compras from "./views/Compras"; // ✅ Se agregó la importación de Compras
+import Compras from "./views/Compras";
 import "./App.css";
+import CatalogoProductos from "./views/CatalogoProductos.jsx";
 
 const App = () => {
   return (
@@ -23,7 +24,8 @@ const App = () => {
           <Route path="/productos" element={<Producto />} />
           <Route path="/categorias" element={<Categorias />} />
           <Route path="/ventas" element={<Ventas />} />
-          <Route path="/compras" element={<Compras />} /> {/* ✅ Se agregó la ruta para Compras */}
+          <Route path="/compras" element={<Compras />} /> {/* ✅ Se agregó la ruta para Compras */}\
+          <Route path="/CatalogoProductos" element={<CatalogoProductos />} /> {/* ✅ Se agregó la ruta para Compras */}
         </Routes>
       </main>
     </Router>

@@ -35,7 +35,7 @@ const Productos = () => {
   // Obtener categorías para el dropdown
   const obtenerCategorias = async () => {
     try {
-      const respuesta = await fetch('http://localhost:3000/api/categoria');
+      const respuesta = await fetch('http://localhost:3000/api/categorias');
       if (!respuesta.ok) throw new Error('Error al cargar las categorías');
       const datos = await respuesta.json();
       setListaCategorias(datos);
