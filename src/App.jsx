@@ -9,6 +9,7 @@ import Ventas from "./views/ventas";
 import Compras from "./views/Compras";
 import "./App.css";
 import CatalogoProductos from "./views/CatalogoProductos.jsx";
+import Estadisticas from "./views/Estadisticas.jsx";
 
 const App = () => {
   return (
@@ -24,8 +25,9 @@ const App = () => {
           <Route path="/productos" element={<Producto />} />
           <Route path="/categorias" element={<Categorias />} />
           <Route path="/ventas" element={<Ventas />} />
-          <Route path="/compras" element={<Compras />} /> {/* ✅ Se agregó la ruta para Compras */}\
-          <Route path="/CatalogoProductos" element={<CatalogoProductos />} /> {/* ✅ Se agregó la ruta para Compras */}
+          <Route path="/compras" element={<Compras />} />
+          <Route path="/CatalogoProductos" element={<CatalogoProductos />} /> 
+          <Route path="/estadisticas" element={<Estadisticas />} />
         </Routes>
       </main>
     </Router>
