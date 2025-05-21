@@ -10,6 +10,7 @@ import Compras from "./views/Compras";
 import "./App.css";
 import CatalogoProductos from "./views/CatalogoProductos.jsx";
 import Estadisticas from "./views/Estadisticas.jsx";
+import Dashboard from "./views/Dashboard.jsx";
 
 const App = () => {
   return (
@@ -28,6 +29,7 @@ const App = () => {
           <Route path="/compras" element={<Compras />} />
           <Route path="/CatalogoProductos" element={<CatalogoProductos />} /> 
           <Route path="/estadisticas" element={<Estadisticas />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </main>
     </Router>

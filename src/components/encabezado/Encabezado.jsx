@@ -148,6 +148,16 @@ const Encabezado = () => {
               </Nav.Link>
 
 
+                            {/* Opción de navegación a dashbords de powerbi */}
+              <Nav.Link
+                onClick={() => navegarA("/dashboard")}
+                className={estaColapsado ? "text-black" : "text-white"}
+              >                
+                {estaColapsado ? <i className="bi-house-door-fill me-2"></i> : null}
+                <strong>Dashboard</strong>
+              </Nav.Link>
+
+
                 {/* Opción de navegación a categorias */}
                 <Nav.Link
                 onClick={() => navegarA("/categorias")}

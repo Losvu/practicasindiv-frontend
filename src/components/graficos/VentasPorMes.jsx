@@ -1,5 +1,5 @@
 import { Card } from "react-bootstrap";
-import { Bar } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import Chart from "chart.js/auto";
 
 const VentasPorMes = ({ meses, totales_por_mes }) => {
@@ -47,7 +47,7 @@ const VentasPorMes = ({ meses, totales_por_mes }) => {
       <Card.Body>
         <Card.Title>Ventas por mes</Card.Title>
         <div style={{ height: "100%", position: "relative" }}>
-          <Bar data={data} options={options} />
+          <Line data={data} options={options} />
         </div>
       </Card.Body>
     </Card>
