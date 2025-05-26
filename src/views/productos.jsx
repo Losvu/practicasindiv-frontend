@@ -203,4 +203,6 @@ const Productos = () => {
   );
 };
 
+
+//relleno, pq me equivoque en el commit anterior
 export default Productos;
