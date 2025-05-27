@@ -78,7 +78,7 @@ const generarPDF = () => {
 
   if (chartImage) {
     doc.addImage(chartImage, "PNG", 14, 40, 100, 100);
-  }
+  } else {console.log("No se pudo capturar el gráfico como imagen.");}
 
   // Tabla de datos
   const columnas = ["Empleado", "Ventas (C$)"];
