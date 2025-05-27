@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import TablaProductos from '../components/producto/TablaProductos'; 
 import ModalRegistroProducto from '../components/producto/ModalRegistroProducto';
-import { Container, Button, Col } from "react-bootstrap";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import CuadroBusquedas from '../components/busquedas/CuadroBusquedas';
+import { Container, Button, Row, Col } from "react-bootstrap";
 
 const Productos = () => {
   const [listaProductos, setListaProductos] = useState([]);
   const [listaCategorias, setListaCategorias] = useState([]);
+
+  const [categoriasFiltradas, setCategoriasFiltradas] = useState([]);
+  const [textoBusqueda, setTextoBusqueda] = useState("");
+
   const [cargando, setCargando] = useState(true);
   const [errorCarga, setErrorCarga] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -20,7 +25,7 @@ const Productos = () => {
     imagen: ''
   });
 
-  // Corrección: Definir productosFiltrados antes de usarlo
+  //Definir productosFiltrados antes de usarlo
   const productosFiltrados = listaProductos.filter(producto => producto.nombre_producto);
 
   const columnas = ["ID", "Nombre", "Descripción", "Categoria", "Precio", "Stock"];
@@ -60,6 +65,7 @@ const Productos = () => {
   useEffect(() => {
     obtenerProductos();
     obtenerCategorias();
+    setCategoriasFiltradas(listaCategorias);
   }, []);
 
   const manejarCambioInput = (e) => {
@@ -103,6 +109,25 @@ const Productos = () => {
       setErrorCarga(error.message);
     }
   };
+
+  //lo del cuadro de busqueda
+    const manejarCambioBusqueda = (e) => {
+    const texto = e.target.value.toLowerCase();
+    setTextoBusqueda(texto);
+
+    const filtradas = listaCategorias.filter(
+      (producto) =>
+        producto.nombre_producto.toLowerCase().includes(texto) ||
+        producto.descripcion_producto.toLowerCase().includes(texto)
+    );
+    setCategoriasFiltradas(filtradas);
+  };
+
+
+
+
+
+
 
   const generarPDFProductos = () => {
     const doc = new jsPDF();
@@ -158,10 +183,20 @@ const Productos = () => {
   return (
     <Container className="mt-5">
       <br />
-      <h4>Productos</h4>
-      <Button variant="primary" onClick={() => setMostrarModal(true)}>
-        Nuevo Producto
-      </Button>
+      <h4>Productos</h4>  
+          <Row>
+        <Col lg={2} md={4} sm={4} xs={5}>
+          <Button variant="primary" onClick={() => setMostrarModal(true)} style={{ width: "100%" }}>
+            Nueva Categoría
+          </Button>
+        </Col>
+        <Col lg={5} md={8} sm={8} xs={7}>
+          <CuadroBusquedas
+            textoBusqueda={textoBusqueda}
+            manejarCambioBusqueda={manejarCambioBusqueda}
+          />
+        </Col>
+      </Row>
       <Col lg={3} md={4} sm={4} xs={5}>
         <Button
           className="mb-3"
@@ -188,6 +223,7 @@ const Productos = () => {
         productos={listaProductos} 
         cargando={cargando} 
         error={errorCarga} 
+        categorias={categoriasFiltradas} 
       />
 
       <ModalRegistroProducto
