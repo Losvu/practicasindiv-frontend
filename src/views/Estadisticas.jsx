@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Button } from "react-bootstrap";
 import VentasPorMes from "../components/graficos/VentasPorMes";
 import VentasPorEmpleado from "../components/graficos/VentasPorEmpleados";
+import ChatIA from '../components/chat/ChatIA';
 
 const Estadisticas = () => {
   // Estados para las ventas por mes
@@ -11,6 +12,8 @@ const Estadisticas = () => {
   // Estados para las ventas por empleado
   const [empleados, setEmpleados] = useState([]);
   const [total_ventas, setTotalVentas] = useState([]);
+
+  const [mostrarChatModal, setMostrarChatModal] = useState(false); // Estado para el modal
 
   // Cargar datos de ventas por mes
   useEffect(() => {
@@ -45,19 +48,40 @@ const cargaVentasPorEmpleado = async () => {
   }
 };
     
-  return (
-    <Container className="mt-5">
-      <h4>Estadísticas</h4>
-      <Row className="mt-4">
-        <Col xs={12} sm={12} md={12} lg={6} className="mb-4">
-          <VentasPorMes meses={meses} totales_por_mes={totalesPorMes} />
-        </Col>
-        <Col xs={12} sm={12} md={12} lg={6} className="mb-4">
-          <VentasPorEmpleado empleados={empleados} total_ventas={total_ventas} />
-        </Col>
-      </Row>
-    </Container>
-  );
+return (
+  <Container className="mt-5">
+    <h4>Estadísticas</h4>
+
+    <Button 
+      variant="primary" 
+      className="mb-4"
+      onClick={() => setMostrarChatModal(true)}
+    >
+      Consultar con IA
+    </Button>
+
+    <ChatIA 
+      mostrarChatModal={mostrarChatModal} 
+      setMostrarChatModal={setMostrarChatModal} 
+    />
+
+    <Row className="mt-4">
+      <Col xs={12} sm={12} md={12} lg={6} className="mb-4">
+        <VentasPorMes 
+          meses={meses} 
+          totales_por_mes={totalesPorMes} 
+        />
+      </Col>
+
+      <Col xs={12} sm={12} md={12} lg={6} className="mb-4">
+        <VentasPorEmpleado 
+          empleados={empleados} 
+          total_ventas={total_ventas} 
+        />
+      </Col>
+    </Row>
+  </Container>
+);
 };
 
 export default Estadisticas;

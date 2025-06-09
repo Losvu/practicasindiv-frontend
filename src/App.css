@@ -28,3 +28,29 @@
 .eliminar{
  background-color: #b21f1f;
 }
+
+/* Asegura que el contenedor principal ocupe toda la altura de la ventana */
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Asegura que el contenido principal ocupe el espacio disponible */
+.content {
+  flex: 1 0 auto;
+}
+
+/* Asegura que el footer se mantenga en la parte inferior */
+footer {
+  flex-shrink: 0;
+}
+
+.portada-imagen {
+width: 20%;
+align-items: center;
+display: block;
+margin: 0 auto;
+height: auto;
+border-radius: 0.5rem;
+}

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container } from "react-bootstrap";
+import { Container, Image } from "react-bootstrap";
+import Portada from '../assets/portada.webp';
+import Proposito from "../components/inicio/Proposito";
 
 const Inicio = () => {
   const [nombreUsuario, setNombreUsuario] = useState("");
@@ -21,16 +23,16 @@ const Inicio = () => {
     navegar("/");
   };
 
-  const iraservicio= () => {
+  const iraservicio = () => {
     navegar("/servicios");
   };
 
   return (
     <Container>
-      <h1 className="titulo">¡Bienvenido, {nombreUsuario}!</h1>
-      <p className="subtitulo">Estás en la página de inicio.</p>
-      <button className="btns" onClick={cerrarSesion}>Cerrar Sesión</button>
-      <button className="btns" onClick={iraservicio}>servicios</button>
+      <br></br>
+      <h1 className="text-center m-4">¡Bienvenido, {nombreUsuario}!</h1>
+      <Image className="portada-imagen" src={Portada} fluid rounded />
+      <Proposito />
     </Container>
   );
 };
